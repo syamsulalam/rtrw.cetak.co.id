@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ActiveUser, LetterRequest, ResidentProfile, RTConfig, PengurusView } from './types';
+import { ActiveUser, LetterRequest, ResidentProfile, RTConfig, PengurusView, ActivityLog, Officer, RuangPengurusSpace } from './types';
 import { 
-  INITIAL_LETTERS, INITIAL_RESIDENTS, INITIAL_RT_CONFIG 
+  INITIAL_LETTERS, INITIAL_RESIDENTS, INITIAL_RT_CONFIG, INITIAL_OFFICERS, INITIAL_RUANG_PENGURUS
 } from './mockData';
 
 // Import Layout & Gateways
@@ -14,6 +14,13 @@ import { DashboardUtama } from './components/DashboardUtama';
 import { TinjauanPengajuanSurat } from './components/TinjauanPengajuanSurat';
 import { PengaturanWilayah } from './components/PengaturanWilayah';
 import { ProfilPengurus } from './components/ProfilPengurus';
+import { AktivitasLog } from './components/AktivitasLog';
+import { LaporanEkspor } from './components/LaporanEkspor';
+
+// Import newly created modular components
+import { DataKeluargaComponent } from './components/DataKeluargaComponent';
+import { RuangPengurusComponent } from './components/RuangPengurusComponent';
+import { CariPengurusComponent } from './components/CariPengurusComponent';
 
 // Import Warga Panel
 import { WargaDashboard } from './components/WargaDashboard';
@@ -43,6 +50,28 @@ export default function App() {
     return cached ? JSON.parse(cached) : INITIAL_RT_CONFIG;
   });
 
+  const [officers, setOfficers] = useState<Officer[]>(() => {
+    const cached = localStorage.getItem('silas_officers');
+    return cached ? JSON.parse(cached) : INITIAL_OFFICERS;
+  });
+
+  const [space, setSpace] = useState<RuangPengurusSpace>(() => {
+    const cached = localStorage.getItem('silas_space');
+    return cached ? JSON.parse(cached) : INITIAL_RUANG_PENGURUS;
+  });
+
+  const [logs, setLogs] = useState<ActivityLog[]>(() => {
+    const cached = localStorage.getItem('silas_logs');
+    if (cached) return JSON.parse(cached);
+    
+    return [
+      { id: 'LOG-30412', timestamp: '2026-06-05T14:30:00.000Z', category: 'resident', text: 'Warga baru Budi Hartono bergabung di RT 60 Pekalongan.', userName: 'Agus Santoso', userNik: '3515123456780001' },
+      { id: 'LOG-78123', timestamp: '2026-06-05T16:45:00.000Z', category: 'letter', text: 'Siti Rahmawati mengajukan permohonan "Surat Pengantar SKCK".', userName: 'Siti Rahmawati', userNik: '3273012345670002' },
+      { id: 'LOG-55102', timestamp: '2026-06-06T08:15:00.000Z', category: 'letter', text: 'Ketua RT menyetujui penerbitan surat pengantar KTP ber-stempel.', userName: 'Agus Santoso', userNik: '3515123456780001' },
+      { id: 'LOG-99124', timestamp: '2026-06-06T10:00:00.000Z', category: 'system', text: 'Konfigurasi sekretariat RT/RW disinkronkan.', userName: 'Agus Santoso', userNik: '3515123456780001' }
+    ];
+  });
+
   // 2. Navigation Routing States
   const [currentView, setCurrentView] = useState<PengurusView>('dashboard');
   const [focusedLetterId, setFocusedLetterId] = useState<string | null>(null);
@@ -65,12 +94,36 @@ export default function App() {
   }, [rtConfig]);
 
   useEffect(() => {
+    localStorage.setItem('silas_officers', JSON.stringify(officers));
+  }, [officers]);
+
+  useEffect(() => {
+    localStorage.setItem('silas_space', JSON.stringify(space));
+  }, [space]);
+
+  useEffect(() => {
+    localStorage.setItem('silas_logs', JSON.stringify(logs));
+  }, [logs]);
+
+  useEffect(() => {
     if (currentUser) {
       localStorage.setItem('silas_user', JSON.stringify(currentUser));
     } else {
       localStorage.removeItem('silas_user');
     }
   }, [currentUser]);
+
+  const addLog = (category: ActivityLog['category'], text: string, name?: string, nik?: string) => {
+    const newLog: ActivityLog = {
+      id: `LOG-${Math.floor(Math.random() * 90000) + 10000}`,
+      timestamp: new Date().toISOString(),
+      category,
+      text,
+      userName: name || currentUser?.nama || 'Sistem',
+      userNik: nik || currentUser?.nik || '0000000000000000',
+    };
+    setLogs((prev) => [newLog, ...prev]);
+  };
 
   // 3. User State Manipulation Logic (Core Actions)
   const handleLoginSuccess = (user: ActiveUser) => {
@@ -79,9 +132,13 @@ export default function App() {
       setCurrentView('dashboard');
     }
     setFocusedLetterId(null);
+    addLog('auth', `Sesi masuk berhasil untuk pengguna ${user.nama} (${user.role.toUpperCase()}).`, user.nama, user.nik);
   };
 
   const handleLogout = () => {
+    if (currentUser) {
+      addLog('auth', `Keluar sesi sukses untuk ${currentUser.nama}.`, currentUser.nama, currentUser.nik);
+    }
     setCurrentUser(null);
     localStorage.removeItem('silas_user');
   };
@@ -97,6 +154,7 @@ export default function App() {
         role: 'warga',
         wargaProfile: budi,
       });
+      addLog('auth', `Beralih Portal Demo: Sesi Warga (${budi.nama}) dibuka.`, budi.nama, budi.nik);
     } else {
       // Switch back to RT Administrator
       setCurrentUser({
@@ -105,6 +163,7 @@ export default function App() {
         role: 'pengurus',
       });
       setCurrentView('dashboard');
+      addLog('auth', `Beralih Portal Demo: Sesi Ketua RT (${rtConfig.namaKetua}) dibuka.`, rtConfig.namaKetua, rtConfig.nikKetua);
     }
     setFocusedLetterId(null);
   };
@@ -123,14 +182,19 @@ export default function App() {
       role: 'warga',
       wargaProfile: completedProfile,
     });
+    addLog('resident', `Warga baru ${completedProfile.nama} berhasil menyelesaikan kelengkapan profil data kependudukan.`, completedProfile.nama, completedProfile.nik);
   };
 
   const handleApproveLetter = (id: string, officialDocNumber: string) => {
     const now = new Date();
     const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     
-    setLetters((prev) =>
-      prev.map((l) =>
+    setLetters((prev) => {
+      const match = prev.find((l) => l.id === id);
+      if (match) {
+        addLog('letter', `Ketua RT menyetujui penerbitan surat ${match.jenisSurat} (ID: ${id}) dengan No. Surat resmi: ${officialDocNumber}`);
+      }
+      return prev.map((l) =>
         l.id === id
           ? {
               ...l,
@@ -139,13 +203,17 @@ export default function App() {
               tglPersetujuan: formattedDate,
             }
           : l
-      )
-    );
+      );
+    });
   };
 
   const handleRejectLetter = (id: string, reason: string) => {
-    setLetters((prev) =>
-      prev.map((l) =>
+    setLetters((prev) => {
+      const match = prev.find((l) => l.id === id);
+      if (match) {
+        addLog('letter', `Ketua RT menolak berkas pengajuan ${match.jenisSurat} (ID: ${id}) karena alasan: ${reason}`);
+      }
+      return prev.map((l) =>
         l.id === id
           ? {
               ...l,
@@ -153,31 +221,54 @@ export default function App() {
               catatanPenolakan: reason,
             }
           : l
-      )
-    );
+      );
+    });
   };
 
-  const handleSubmitNewLetter = (jenis: string, keperluan: string) => {
+  const handleSubmitNewLetter = (jenis: string, keperluan: string, isDraft = false, existingId: string | null = null) => {
     if (!currentUser) return;
-    const randId = `SL-0${Math.floor(Math.random() * 90) + 10}`;
     const now = new Date();
     const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-    const newApplication: LetterRequest = {
-      id: randId,
-      nik: currentUser.nik,
-      nama: currentUser.nama,
-      jenisSurat: jenis,
-      keperluan: keperluan,
-      tanggalPengajuan: formattedDate,
-      status: 'pending',
-    };
-
-    setLetters((prev) => [newApplication, ...prev]);
+    if (existingId) {
+      setLetters((prev) =>
+        prev.map((l) =>
+          l.id === existingId
+            ? {
+                ...l,
+                jenisSurat: jenis,
+                keperluan: keperluan,
+                status: isDraft ? 'draft' : 'pending',
+                tanggalPengajuan: formattedDate,
+              }
+            : l
+        )
+      );
+      addLog('letter', `${isDraft ? 'Menyimpan pembaharuan draf' : 'Mengirimkan pengajuan draf resmi'} "${jenis}" (ID: ${existingId})`, currentUser.nama, currentUser.nik);
+    } else {
+      const randId = `SL-0${Math.floor(Math.random() * 90) + 15}`;
+      const newApplication: LetterRequest = {
+        id: randId,
+        nik: currentUser.nik,
+        nama: currentUser.nama,
+        jenisSurat: jenis,
+        keperluan: keperluan,
+        tanggalPengajuan: formattedDate,
+        status: isDraft ? 'draft' : 'pending',
+      };
+      setLetters((prev) => [newApplication, ...prev]);
+      addLog('letter', `${isDraft ? 'Menyimpan draf permohonan baru' : 'Mengirimkan permohonan baru'} "${jenis}" (ID: ${randId})`, currentUser.nama, currentUser.nik);
+    }
   };
 
   const handleDeleteLetterRequest = (id: string) => {
-    setLetters((prev) => prev.filter((l) => l.id !== id));
+    setLetters((prev) => {
+      const match = prev.find((l) => l.id === id);
+      if (match) {
+        addLog('letter', `Keluarga menghapus ${match.status === 'draft' ? 'draf dokumen sementara' : 'pengajuan dokumen'} "${match.jenisSurat}" (ID: ${id})`, currentUser.nama, currentUser.nik);
+      }
+      return prev.filter((l) => l.id !== id);
+    });
   };
 
   // 4. Gateway Decision Branching (Login/Onboarding)
@@ -326,93 +417,63 @@ export default function App() {
                 </div>
               )}
 
-              {currentView === 'data-warga' && (
-                // Citizens database tables with clickable row preview KTP!
-                <div className="space-y-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <h2 className="text-xl font-bold text-slate-909 tracking-tight">Data Induk Kependudukan RT 60</h2>
-                      <p className="text-xs text-slate-505 mt-1">Daftar nama dan NIK kepala keluarga terdaftar di rukun tetangga.</p>
-                    </div>
 
-                    <div className="relative w-full max-w-xs">
-                      <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input
-                        type="text"
-                        placeholder="Cari nama atau NIK warga..."
-                        value={wargaSearch}
-                        onChange={(e) => setWargaSearch(e.target.value)}
-                        className="w-full pl-9 pr-3 py-2 border rounded-xl text-xs focus:ring-2 focus:ring-[#00288e] outline-none"
-                      />
-                    </div>
-                  </div>
+              {currentView === 'data-kk' && (
+                <DataKeluargaComponent
+                  residents={residents}
+                  onAddResident={(newResident) => {
+                    const updated = [...residents, newResident];
+                    setResidents(updated);
+                  }}
+                  onUpdateResident={(updatedResident) => {
+                    const updated = residents.map(r => r.nik === updatedResident.nik ? updatedResident : r);
+                    setResidents(updated);
+                  }}
+                  onDeleteResident={(nik) => {
+                    const target = residents.find(r => r.nik === nik);
+                    const updated = residents.filter(r => r.nik !== nik);
+                    setResidents(updated);
+                    if (target) {
+                      addLog('resident', `Warga ${target.nama} dikeluarkan dari basis data KK kependudukan.`);
+                    }
+                  }}
+                  addLog={addLog}
+                />
+              )}
 
-                  <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs border-collapse font-medium">
-                        <thead>
-                          <tr className="bg-slate-50 border-b text-slate-400 font-bold text-slate-505 uppercase tracking-wider">
-                            <th className="p-4 pl-6">Nama Lengkap</th>
-                            <th className="p-4">16-Digit NIK</th>
-                            <th className="p-4">Blok & No. Rumah</th>
-                            <th className="p-4">Pekerjaan</th>
-                            <th className="p-4">No. WhatsApp</th>
-                            <th className="p-4 text-right pr-6">Berkas KTP</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y text-slate-700">
-                          {residents.filter(r => r.nama.toLowerCase().includes(wargaSearch.toLowerCase()) || r.nik.includes(wargaSearch)).map((r) => (
-                            <tr key={r.nik} className="hover:bg-slate-50/50 transition-colors">
-                              <td className="p-4 pl-6 font-bold text-slate-805 uppercase flex items-center gap-2">
-                                <div className="w-7 h-7 rounded-full bg-blue-50 text-[#00288e] font-black text-[11px] flex items-center justify-center">
-                                  {r.nama.charAt(0)}
-                                </div>
-                                {r.nama}
-                              </td>
-                              <td className="p-4 font-mono font-semibold text-slate-600 tracking-wide">{r.nik}</td>
-                              <td className="p-4 font-bold text-emerald-700">{r.blokNomor || '[Belum Mengisi]'}</td>
-                              <td className="p-4 font-semibold">{r.pekerjaan || '[Belum Mengisi]'}</td>
-                              <td className="p-4 font-mono text-slate-500">
-                                {r.noHp ? `+62 ${r.noHp}` : '[Belum Mengisi]'}
-                              </td>
-                              <td className="p-4 text-right pr-6">
-                                {r.ktpUrl ? (
-                                  <button 
-                                    onClick={() => setFocusedCitizenKtp(r.ktpUrl || null)}
-                                    className="px-2.5 py-1 bg-blue-50 text-[#00288e] font-bold text-[10px] rounded hover:bg-blue-100 transition-colors inline-flex items-center gap-1 cursor-pointer"
-                                  >
-                                    <Eye size={12} /> Lihat KTP
-                                  </button>
-                                ) : (
-                                  <span className="text-slate-400 text-[10px] italic">Tiada Berkas</span>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
-                  {/* Citizen's KTP preview modal overlay */}
-                  {focusedCitizenKtp && (
-                    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center" onClick={() => setFocusedCitizenKtp(null)}>
-                      <div className="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl border border-slate-100 relative space-y-4" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex justify-between items-center pb-2 border-b">
-                          <h4 className="text-sm font-bold text-slate-900">Salinan KTP Kependudukan</h4>
-                          <button onClick={() => setFocusedCitizenKtp(null)} className="text-slate-400 hover:text-slate-600 font-extrabold p-1 text-sm">✕</button>
-                        </div>
-                        <div className="aspect-[1.58/1] rounded-xl overflow-hidden border">
-                          <img src={focusedCitizenKtp} alt="Citizen KTP preview" className="w-full h-full object-cover" />
-                        </div>
-                        <div className="p-3 bg-blue-50 rounded-lg text-[11px] text-slate-500 leading-normal flex gap-2">
-                          <Info size={14} className="text-[#00288e] shrink-0 mt-0.5" />
-                          <span>Milik warga resmi RT 60 Pekalongan. Keamanan data terenkripsi.</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+              {currentView === 'ruang-pengurus' && (
+                <RuangPengurusComponent
+                  initialSpace={space}
+                  initialOfficers={officers}
+                  residents={residents}
+                  onUpdateSpace={(updatedSpace) => {
+                    setSpace(updatedSpace);
+                  }}
+                  onUpdateOfficers={(updatedOfficers) => {
+                    setOfficers(updatedOfficers);
+                  }}
+                  onAddResidentBatch={(newResidents) => {
+                    const updated = [...residents, ...newResidents];
+                    setResidents(updated);
+                  }}
+                  onApproveResident={(nik) => {
+                    const target = residents.find(r => r.nik === nik);
+                    if (target) {
+                      const updated = residents.map(r => r.nik === nik ? { ...r, statusWarga: 'aktif' } : r);
+                      setResidents(updated);
+                      addLog('resident', `Permohonan gabung warga ${target.nama} disetujui secara online.`);
+                    }
+                  }}
+                  onRejectResident={(nik) => {
+                    const target = residents.find(r => r.nik === nik);
+                    const updated = residents.filter(r => r.nik !== nik);
+                    setResidents(updated);
+                    if (target) {
+                      addLog('resident', `Mengabaikan / menolak pengajuan registrasi warga baru atas nama ${target.nama}.`);
+                    }
+                  }}
+                  addLog={addLog}
+                />
               )}
 
               {currentView === 'pengaturan-wilayah' && (
@@ -426,9 +487,23 @@ export default function App() {
                 />
               )}
 
+              {currentView === 'laporan' && (
+                <LaporanEkspor
+                  letters={letters}
+                  residents={residents}
+                  rtConfig={rtConfig}
+                  logs={logs}
+                  onClearLogs={() => {
+                    setLogs([]);
+                    addLog('system', 'Pembersihan audit log sistem dilakukan oleh administrator.');
+                  }}
+                />
+              )}
+
               {currentView === 'profil' && (
                 <ProfilPengurus
                   rtConfig={rtConfig}
+                  officers={officers}
                   onUpdateConfig={(updated) => {
                     setRtConfig(updated);
                     setCurrentUser(prev => prev ? { ...prev, nama: updated.namaKetua, nik: updated.nikKetua } : null);
@@ -444,12 +519,33 @@ export default function App() {
       {/* 3. RESIDENT (WARGA) PORTAL SCREENS */}
       {/* ========================================================= */}
       {currentUser.role === 'warga' && (
-        <WargaDashboard
-          resident={currentUser.wargaProfile!}
-          letters={letters}
-          onSubmitLetter={handleSubmitNewLetter}
-          onDeleteRequest={handleDeleteLetterRequest}
-        />
+        <>
+          {currentView === 'cari-pengurus' ? (
+            <CariPengurusComponent
+              space={space}
+              officers={officers}
+              residents={residents}
+              citizen={currentUser.wargaProfile!}
+              onApplyForRelocation={(newBlock) => {
+                const updated = residents.map(r => r.nik === currentUser.wargaProfile!.nik ? { ...r, statusWarga: 'tertunda', blokNomor: newBlock } : r);
+                setResidents(updated);
+                // Sync to current user profile state
+                const targetProf = updated.find(r => r.nik === currentUser.wargaProfile!.nik);
+                if (targetProf) {
+                  setCurrentUser(prev => prev ? { ...prev, wargaProfile: targetProf } : null);
+                }
+              }}
+              addLog={addLog}
+            />
+          ) : (
+            <WargaDashboard
+              resident={currentUser.wargaProfile!}
+              letters={letters}
+              onSubmitLetter={handleSubmitNewLetter}
+              onDeleteRequest={handleDeleteLetterRequest}
+            />
+          )}
+        </>
       )}
     </AppLayout>
   );

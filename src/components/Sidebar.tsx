@@ -8,7 +8,11 @@ import {
   UserCircle,
   LogOut,
   Sparkles,
-  RefreshCw
+  RefreshCw,
+  History,
+  FileDown,
+  Map,
+  Home
 } from 'lucide-react';
 import { Role } from '../types';
 
@@ -34,13 +38,17 @@ export function Sidebar({
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { id: 'layanan-surat', icon: FileText, label: 'Layanan Surat' },
     { id: 'status-pengajuan', icon: ClipboardList, label: 'Daftar Terbit' },
-    { id: 'data-warga', icon: Users, label: 'Data Warga' },
+    { id: 'data-kk', icon: Users, label: 'Data Kependudukan' },
+    { id: 'ruang-pengurus', icon: Map, label: 'Organisasi Pengurus' },
+    { id: 'laporan', icon: FileDown, label: 'Ekspor Laporan' },
+    { id: 'log-aktivitas', icon: History, label: 'Log Aktivitas' },
     { id: 'pengaturan-wilayah', icon: Building2, label: 'Pengaturan Wilayah' },
-    { id: 'profil', icon: UserCircle, label: 'Profil Ketua RT' },
+    { id: 'profil', icon: UserCircle, label: 'Profil Pengurus' },
   ];
 
   const wgItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Beranda Warga' },
+    { id: 'cari-pengurus', icon: Map, label: 'Hubungi Pengurus RT/RW' },
   ];
 
   const navItems = role === 'pengurus' ? pgItems : wgItems;
@@ -105,7 +113,7 @@ export function Sidebar({
           <div className="overflow-hidden">
             <p className="text-xs font-bold text-slate-900 truncate">{username}</p>
             <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider truncate">
-              {role === 'pengurus' ? 'Ketua RT 60' : 'Anggota Warga'}
+              {role === 'pengurus' ? 'Pengurus Wilayah' : 'Anggota Warga'}
             </p>
           </div>
         </div>

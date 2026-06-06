@@ -1,15 +1,18 @@
 import React from 'react';
-import { Pencil, Save, Info, Upload, Eye } from 'lucide-react';
-import { RTConfig } from '../types';
+import { Pencil, Save, Info, Upload, Eye, Shield, Users, Network, MapPin } from 'lucide-react';
+import { RTConfig, Officer } from '../types';
 
 interface ProfilPengurusProps {
   rtConfig: RTConfig;
+  officers: Officer[];
   onUpdateConfig: (updated: RTConfig) => void;
 }
 
-export function ProfilPengurus({ rtConfig, onUpdateConfig }: ProfilPengurusProps) {
+export function ProfilPengurus({ rtConfig, officers, onUpdateConfig }: ProfilPengurusProps) {
   const [form, setForm] = React.useState<RTConfig>({ ...rtConfig });
   const [success, setSuccess] = React.useState(false);
+  const [activeSubTab, setActiveSubTab] = React.useState<'data' | 'organogram'>('data');
+  const [selectedOrganogramNode, setSelectedOrganogramNode] = React.useState<Officer | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +70,28 @@ export function ProfilPengurus({ rtConfig, onUpdateConfig }: ProfilPengurusProps
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/70 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Sub tabs switches */}
+      <div className="flex border-b border-indigo-50 leading-none">
+        <button
+          onClick={() => setActiveSubTab('data')}
+          className={`px-5 py-3.5 text-xs font-bold transition-all border-b-2 -mb-px flex items-center gap-1.5 cursor-pointer ${
+            activeSubTab === 'data' ? 'border-[#00288e] text-[#00288e]' : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Pencil size={14} /> Sunting Biodata & Berkas
+        </button>
+        <button
+          onClick={() => setActiveSubTab('organogram')}
+          className={`px-5 py-3.5 text-xs font-bold transition-all border-b-2 -mb-px flex items-center gap-1.5 cursor-pointer ${
+            activeSubTab === 'organogram' ? 'border-[#00288e] text-[#00288e]' : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Network size={14} /> Bagan Kepengurusan Organisasi
+        </button>
+      </div>
+
+      {activeSubTab === 'data' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column - Form */}
         <section className="lg:col-span-7 flex flex-col gap-6">
           <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col h-full overflow-hidden">
@@ -258,6 +282,176 @@ export function ProfilPengurus({ rtConfig, onUpdateConfig }: ProfilPengurusProps
           </div>
         </section>
       </div>
+      ) : (
+        /* TAB 2: INTERACTIVE BAGAN ORGANISASI (ORGANOGRAM) LINKED TO PROFILE */
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-in text-xs font-semibold">
+          
+          {/* Organogram Chart Area Left Panel */}
+          <div className="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col space-y-8 min-h-[460px]">
+            <div className="border-b pb-4 flex justify-between items-center">
+              <div>
+                <dt className="text-[9px] text-[#00288e] uppercase font-black tracking-wider">Hirarki Tata Urus Wilayah</dt>
+                <h4 className="text-sm font-black text-slate-900 mt-1 uppercase tracking-wider">Struktur Organisasi Kepengurusan</h4>
+              </div>
+              <span className="text-[10px] bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full font-mono text-[#00288e] font-bold">MUTAL-TIER SYNC</span>
+            </div>
+
+            {/* Tree Chart */}
+            <div className="relative flex flex-col items-center space-y-12 py-4">
+              
+              {/* LEVEL 1: RW ROOT CHIEF */}
+              <div className="flex flex-col items-center">
+                <div 
+                  onClick={() => setSelectedOrganogramNode(officers.find(o => o.role.toLowerCase().includes('ketua rw')) || null)}
+                  className="bg-amber-500 hover:bg-amber-600 hover:scale-105 transition-all text-white p-3 px-6 rounded-2xl shadow-md border-2 border-white cursor-pointer text-center relative"
+                >
+                  <span className="text-[8px] bg-slate-900/60 px-1.5 py-0.2 rounded font-black tracking-wider uppercase">Tingkat RW</span>
+                  <p className="font-extrabold uppercase mt-1">Bpk. H. Rahmat</p>
+                  <p className="text-[9.5px] text-amber-100 font-bold">Ketua RW 15</p>
+                </div>
+              </div>
+
+              {/* Connecting vertical line helper */}
+              <div className="w-[2px] h-12 bg-slate-200 absolute top-12 left-1/2 -translate-x-1/2 -z-10"></div>
+
+              {/* LEVEL 2: RW STAFF ROW */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full max-w-lg justify-center relative">
+                
+                {/* Horizontal connection bar */}
+                <div className="absolute top-0 left-1/6 right-1/6 h-[2px] bg-slate-200 -z-10"></div>
+
+                {/* Sub node 1 (Sekretaris RW) */}
+                <div 
+                  onClick={() => setSelectedOrganogramNode(officers.find(o => o.role.toLowerCase().includes('sekretaris rw')) || null)}
+                  className="bg-slate-800 hover:bg-slate-900 hover:scale-102 transition-all text-white p-2.5 rounded-xl shadow border border-slate-700 cursor-pointer text-center"
+                >
+                  <p className="font-bold uppercase truncate text-[11px]">Santi Wijaya</p>
+                  <p className="text-[9px] text-slate-400 font-bold">Sekretaris RW</p>
+                </div>
+
+                {/* Sub node 2 (Bendahara RW) */}
+                <div 
+                  onClick={() => setSelectedOrganogramNode(officers.find(o => o.role.toLowerCase().includes('bendahara rw')) || null)}
+                  className="bg-slate-800 hover:bg-slate-900 hover:scale-102 transition-all text-white p-2.5 rounded-xl shadow border border-slate-700 cursor-pointer text-center"
+                >
+                  <p className="font-bold uppercase truncate text-[11px]">Iwan Hartono</p>
+                  <p className="text-[9px] text-slate-400 font-bold">Bendahara RW</p>
+                </div>
+
+                {/* Sub node 3 (General staff / Wakil RW) */}
+                <div 
+                  onClick={() => setSelectedOrganogramNode(officers.find(o => o.level === 'RW' && !o.role.toLowerCase().includes('ketua'))[1] || null)}
+                  className="bg-slate-800 hover:bg-slate-900 hover:scale-102 transition-all text-white p-2.5 rounded-xl shadow border border-slate-700 cursor-pointer text-center col-span-2 sm:col-span-1"
+                >
+                  <p className="font-bold uppercase truncate text-[11px]">Joni Hermawan</p>
+                  <p className="text-[9px] text-slate-400 font-bold">Wakil RW</p>
+                </div>
+              </div>
+
+              {/* Connecting vertical line down to RT */}
+              <div className="w-[2px] h-14 bg-slate-200 -mt-2 -z-10"></div>
+
+              {/* LEVEL 3: SEKTOR RT SUB-CHIEFS (YOU ARE HERE!) */}
+              <div className="relative py-2 px-4 bg-slate-50 border border-slate-200 rounded-2xl w-full flex flex-col items-center">
+                <span className="absolute -top-3 px-3 py-0.5 bg-blue-100 border border-blue-200 text-[#00288e] rounded-full text-[8px] font-black uppercase tracking-wider">Pengurus Lingkup Sektor RT 60</span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full pt-4">
+                  
+                  {/* node RT 1 - Ketua RT (YOU / AGUS SANTOSO) */}
+                  <div 
+                    onClick={() => setSelectedOrganogramNode({ id: 'active', name: form.namaKetua, role: 'Ketua RT 60 Pekalongan', phone: form.noHpKetua, level: 'RT', rtNumber: '60', email: 'rt60@alampintar.org' })}
+                    className="p-3 bg-gradient-to-r from-blue-700 to-[#00288e] text-white rounded-xl shadow-lg hover:scale-105 transition-transform cursor-pointer text-center ring-2 ring-yellow-400"
+                  >
+                    <span className="text-[7.5px] bg-yellow-400 text-slate-900 font-black px-1.5 py-0.2 rounded uppercase">ANDA (Kamar Login)</span>
+                    <p className="font-extrabold uppercase text-[11px] mt-1">{form.namaKetua}</p>
+                    <p className="text-[9px] text-blue-100 font-mono font-bold">Ketua RT {form.rtNumber}</p>
+                  </div>
+
+                  {/* node RT 2 - Sekretaris RT */}
+                  <div 
+                    onClick={() => setSelectedOrganogramNode(officers.find(o => o.role.toLowerCase().includes('sekretaris rt')) || null)}
+                    className="p-3 bg-white border border-slate-200 hover:bg-slate-50 transition-colors text-slate-700 rounded-xl cursor-pointer text-center"
+                  >
+                    <p className="font-extrabold uppercase text-[11px] text-slate-950">Budi Utomo</p>
+                    <p className="text-[9.2px] text-slate-450 font-bold">Sekretaris RT 60</p>
+                  </div>
+
+                  {/* node RT 3 - Bendahara RT */}
+                  <div 
+                    onClick={() => setSelectedOrganogramNode(officers.find(o => o.role.toLowerCase().includes('bendahara rt')) || null)}
+                    className="p-3 bg-white border border-slate-200 hover:bg-slate-50 transition-colors text-slate-700 rounded-xl cursor-pointer text-center"
+                  >
+                    <p className="font-extrabold uppercase text-[11px] text-slate-950">Siti Rahma</p>
+                    <p className="text-[9.2px] text-slate-450 font-bold">Bendahara RT 60</p>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Right Panel Detail Sidebar */}
+          <div className="lg:col-span-4 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
+            <div>
+              <span className="text-[9px] bg-indigo-50 text-[#00288e] border border-indigo-150 p-1 px-2.5 rounded-lg uppercase tracking-wider font-mono">Bagan Node Detail</span>
+              <h3 className="text-sm font-black text-slate-900 mt-2 uppercase tracking-tight">Konsol Detail Pengurus</h3>
+              <p className="text-[11px] text-slate-400 mt-0.5 leading-normal">Klik salah satu kotak pengurus di bagan organisasi sebelah kiri untuk melihat detail kontak.</p>
+            </div>
+
+            {selectedOrganogramNode ? (
+              <div className="p-5 bg-slate-50 rounded-xl border space-y-4 animate-fade-in">
+                <div className="border-b pb-3 space-y-1">
+                  <span className={`px-2 py-0.5 text-[8px] font-mono font-bold rounded uppercase ${
+                    selectedOrganogramNode.level === 'RW' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-[#00288e]'
+                  }`}>
+                    Tingkat {selectedOrganogramNode.level}
+                  </span>
+                  <h4 className="text-xs font-black text-slate-900 uppercase mt-2">{selectedOrganogramNode.name}</h4>
+                  <p className="text-[10.5px] text-slate-500 font-bold">{selectedOrganogramNode.role}</p>
+                </div>
+
+                <div className="space-y-2 font-mono text-[11px] font-bold">
+                  {selectedOrganogramNode.phone && (
+                    <div className="flex justify-between items-center bg-white p-2 rounded border">
+                      <span className="text-slate-400 font-sans">No. WhatsApp:</span>
+                      <a href={`https://wa.me/62${selectedOrganogramNode.phone}`} target="_blank" rel="noopener noreferrer" className="text-[#00288e] hover:underline">
+                        +62 {selectedOrganogramNode.phone}
+                      </a>
+                    </div>
+                  )}
+                  {selectedOrganogramNode.email && (
+                    <div className="flex justify-between items-center bg-white p-2 rounded border truncate">
+                      <span className="text-slate-400 font-sans">Alamat Email:</span>
+                      <span className="text-slate-850 lowercase">{selectedOrganogramNode.email}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center bg-white p-2 rounded border">
+                    <span className="text-slate-400 font-sans">Wilayah Tugas:</span>
+                    <span className="text-slate-800 font-sans font-extrabold uppercase">Sektor RT 60 PEKALONGAN</span>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <a 
+                    href={`tel:${selectedOrganogramNode.phone}`}
+                    className="w-full py-2 bg-[#00288e] text-white rounded-lg hover:bg-blue-900 transition-colors flex items-center justify-center font-bold gap-1 text-[11px]"
+                  >
+                     Hubungi Panggilan Suara
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <div className="p-8 border-2 border-dashed border-slate-205 rounded-xl text-center">
+                <p className="text-[11px] text-slate-400 font-bold leading-normal">
+                  Belum ada kotak yang dipilih. Silakan klik salah satu jabatan resmi pada bagan untuk berkoordinasi langsung.
+                </p>
+              </div>
+            )}
+          </div>
+
+        </div>
+      )}
     </div>
   );
 }
