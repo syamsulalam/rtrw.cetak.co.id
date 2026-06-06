@@ -1,0 +1,138 @@
+import { LetterRequest, ResidentProfile, RTConfig } from './types';
+
+export const INITIAL_RT_CONFIG: RTConfig = {
+  rtNumber: '60',
+  rwNumber: '14',
+  kelurahan: 'Kebonagung',
+  kecamatan: 'Sukajaya',
+  kota: 'Kota Pekalongan',
+  kodePos: '51112',
+  namaKetua: 'Agus Santoso, S.T.',
+  nikKetua: '3515123456780001',
+  noHpKetua: '81234567890',
+  alamatSekretariat: 'Jl. Merpati No. 45, Kebonagung, Pekalongan',
+  stampUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCrQMsGgZMkgTzv-Wdf8AAahDrE8aCvUW2J19C4-f5OxpOjGwsWiJBaJNDZj7jUJ23fwIFOyShsc7kwK1ya1U8N8-yaEw6TprgSnZTWSeZSQ2904Tokw8zQiXcAOsA0h_dh_RCZLz97KMr1odea908vs66UXD-A_zSdleWkNp0Ndk2Wg7Zyz5UwEeABDeXY1YkI2lIOG0NPgZUyhoKimFVYEHdhBkYj9Nr5ZUi0yhUdcQvP59vaRiZp5QE98SAXLkjXWIrc9Kydoh1f',
+  logoUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCHXbZ0z6v07mQ6v0l99pM4U0gSOfXq76nN-m28F-wB6N9SUn9Z_s2zX8O566bXk-gW7V3aD',
+  signatureUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBp489gAe-c8MrQR-s-Y5SF_wI9XDzkGoPT-TEAHtf87vKaD4L0eka0a-Nlcrtv3lE0SHnhd7DnRmVfsZL-ivarpIsqXcLFBc9bN7Al26oRb-lj5eNxM0yyvPEQbQX8_vQ4UwAUFhE8IqjdobjGL99tTxh46sPCJMWQI1CJCCfu2zoPc8XtyjPj3Cj3OEdIvWh_NRe3-8J2rwpYVtXFCUm3UCelu0U11peq5jh4VU-Q5Vftg-tieNnqsg2WjA0baUKNKh9-Xxpy4mGJ',
+};
+
+export const INITIAL_RESIDENTS: ResidentProfile[] = [
+  {
+    nik: '3273012345670001',
+    nama: 'Budi Hartono',
+    tempatLahir: 'Semarang',
+    tanggalLahir: '1988-04-12',
+    jenisKelamin: 'Laki-laki',
+    agama: 'Islam',
+    pekerjaan: 'Karyawan Swasta',
+    statusKawin: 'Kawin',
+    alamatKtp: 'Jl. Garuda No. 12, RT 60/RW 14, Kebonagung',
+    blokNomor: 'Blok A No. 12',
+    noHp: '8112233445',
+    progressOnboarding: 100,
+    ktpUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBSp_C0U186E128y9vW-yU1N',
+  },
+  {
+    nik: '3273012345670002',
+    nama: 'Siti Rahmawati',
+    tempatLahir: 'Pekalongan',
+    tanggalLahir: '1992-08-22',
+    jenisKelamin: 'Perempuan',
+    agama: 'Islam',
+    pekerjaan: 'Ibu Rumah Tangga',
+    statusKawin: 'Kawin',
+    alamatKtp: 'Jl. Rajawali No. 8, RT 60/RW 14, Kebonagung',
+    blokNomor: 'Blok B No. 8',
+    noHp: '8521122334',
+    progressOnboarding: 100,
+  },
+  {
+    nik: '3273012345670003',
+    nama: 'Rian Hidayat',
+    tempatLahir: 'Jakarta',
+    tanggalLahir: '2001-11-05',
+    jenisKelamin: 'Laki-laki',
+    agama: 'Kristen',
+    pekerjaan: 'Mahasiswa',
+    statusKawin: 'Belum Kawin',
+    alamatKtp: 'Jl. Merak No. 17, RT 60/RW 14, Kebonagung',
+    blokNomor: 'Blok C No. 17',
+    noHp: '8775566778',
+    progressOnboarding: 40, // Needs onboarding profile completion
+  },
+];
+
+export const INITIAL_LETTERS: LetterRequest[] = [
+  {
+    id: 'SL-001',
+    nik: '3273012345670001',
+    nama: 'Budi Hartono',
+    jenisSurat: 'Surat Pengantar Pembuatan KTP',
+    keperluan: 'Pembaruan KTP Elektronik karena alamat berubah',
+    tanggalPengajuan: '2026-06-04',
+    status: 'pending',
+    keperluanDetail: {
+      rt: '60',
+      rw: '14',
+      blok: 'A-12',
+      keteranganTambahan: 'Warga baru pindahan dari Semarang semenjak Mei 2026.',
+    },
+  },
+  {
+    id: 'SL-002',
+    nik: '3273012345670002',
+    nama: 'Siti Rahmawati',
+    jenisSurat: 'Surat Pengantar Surat Keterangan Catatan Kepolisian (SKCK)',
+    keperluan: 'Melamar pekerjaan sebagai Pegawai Negeri Sipil (PNS)',
+    tanggalPengajuan: '2026-06-02',
+    status: 'disetujui',
+    nomorSurat: '045/SP/RT60/RW14/VI/2026',
+    tglPersetujuan: '2026-06-03',
+    keperluanDetail: {
+      rt: '60',
+      rw: '14',
+      blok: 'B-8',
+      keteranganTambahan: 'Karakter baik, aktif dalam pengajian RT.',
+    },
+  },
+  {
+    id: 'SL-003',
+    nik: '3273012345670001',
+    nama: 'Budi Hartono',
+    jenisSurat: 'Surat Keterangan Domisili Usaha',
+    keperluan: 'Syarat pembukaan warung kelontong',
+    tanggalPengajuan: '2026-05-28',
+    status: 'disetujui',
+    nomorSurat: '038/SP/RT60/RW14/V/2026',
+    tglPersetujuan: '2026-05-29',
+  },
+  {
+    id: 'SL-004',
+    nik: '3273012345670003',
+    nama: 'Rian Hidayat',
+    jenisSurat: 'Surat Keterangan Belum Menikah',
+    keperluan: 'Persyaratan pengajuan beasiswa luar negeri',
+    tanggalPengajuan: '2026-06-01',
+    status: 'ditolak',
+    catatanPenolakan: 'Format berkas pendukung kurang lengkap. Silakan lampirkan KTP orang tua dan lengkapi profil warga terlebih dahulu.',
+  },
+];
+
+export const MAP_BLOCKS = [
+  { id: 'A', name: 'Blok A', coordinates: 'M 40,40 L 120,40 L 120,100 L 40,100 Z', color: '#3b82f6', count: 18 },
+  { id: 'B', name: 'Blok B', coordinates: 'M 140,40 L 220,40 L 220,100 L 140,100 Z', color: '#10b981', count: 14 },
+  { id: 'C', name: 'Blok C', coordinates: 'M 40,120 L 120,120 L 120,180 L 40,180 Z', color: '#f59e0b', count: 11 },
+  { id: 'D', name: 'Blok D', coordinates: 'M 140,120 L 220,120 L 220,180 L 140,180 Z', color: '#8b5cf6', count: 9 },
+  { id: 'E', name: 'Blok E', coordinates: 'M 240,40 L 320,40 L 320,180 L 240,180 Z', color: '#ec4899', count: 16 },
+];
+
+export const JENIS_SURAT_LIST = [
+  'Surat Pengantar Pembuatan KTP',
+  'Surat Pengantar Pembuatan KK (Kartu Keluarga)',
+  'Surat Pengantar Pembuatan SKCK',
+  'Surat Keterangan Domisili Tinggal',
+  'Surat Keterangan Usaha (SKU)',
+  'Surat Keterangan Kurang Mampu (SKTM)',
+  'Surat Keterangan Belum Menikah',
+  'Surat Keterangan Kematian',
+];
