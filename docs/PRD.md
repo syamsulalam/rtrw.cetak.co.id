@@ -32,6 +32,9 @@ SILAS (Sistem Informasi Layanan Surat Pengantar) - A digital platform to streaml
 - [x] **Data Keluarga & Blok Perumahan (KK Database)**: Organizes residents into KK (Kepala Keluarga) units attached to real house addresses (e.g., Blok I No 12A). Clear visual trees mapping the KK cluster and lists of family members.
 - [x] **Citizens Application & Bulk Import Engine**: Warga can apply online to their RT/RW space, and Pengurus can bulk-register them either by uploading a CSV spreadsheet file, or pasting raw text tables (e.g., Tab/Comma separated list of NIK, Nama, Blok, Peran KK, HP).
 
+### 6. Editorial Evidence Foundation
+- [x] **Global Research Map**: `GLOBAL_RESEARCH.md` covers all 16 frozen topical-authority families with 24 reusable evidence records and explicit gates for local authority, service requirements, population data, privacy, electronic signatures/documents, archives, SPBE security, accessibility, continuity, procurement, and vendor claims. This is a research-stage artifact only; outlines, articles, HTML publication, sitemap changes, deployment, and GSC submission remain outside the current scope.
+
 ### Progress Legend:
 - [x] Implemented
 - [/] Partially Implemented

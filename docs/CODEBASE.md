@@ -10,6 +10,7 @@ This document provides a comprehensive overview of the current codebase structur
 - **`/vite.config.ts`**: Vite bundler configuration, integrating React and Tailwind CSS plugins, and setting up path aliases (`@/`).
 - **`/.env.example`**: Example environment variables file defining required secrets.
 - **`/AGENTS.md`**: Persists agent instruction guidelines and communication rules centered around self-direction.
+- **`/GLOBAL_RESEARCH.md`**: Pre-writing evidence foundation for the frozen 16-topic SILAS editorial catalog. It links current Indonesian and technical primary sources to local topic IDs, records applicability limits, and holds legal, identity, privacy, signature, archival, security, continuity, procurement, and vendor claims behind explicit gates. It does not change runtime behavior or authorize article drafting.
 
 ### Entry Points & Core Orchestrator
 - **`/index.html`**: The main HTML file. Serves as the mounting point for the React application (`<div id="root"></div>`) and loads `/src/main.tsx`.
