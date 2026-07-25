@@ -56,6 +56,20 @@ sources:
 - Later, sprinkle `Kawan Cetak.co.id`, `Sobat Cetak.co.id`, or `Teman Cetak.co.id` at useful warnings, decisions, examples, or the conclusion; do not force them into every section.
 - Do not use a generic industry-history or “Di era digital” introduction.
 
+
+<!-- BEGIN MANAGED IMAGE PLAN -->
+## Image plan
+
+- **Image ID:** `EXT-001`
+- **Source type:** `wikimedia-commons`
+- **Placement:** after the opening has answered the main question, before the first detailed H2
+- **Exact Markdown to insert:** `![Ilustrasi !Беларускі дом друку (2020 г.).jpg](https://upload.wikimedia.org/wikipedia/commons/2/28/%21%D0%91%D0%B5%D0%BB%D0%B0%D1%80%D1%83%D1%81%D0%BA%D1%96_%D0%B4%D0%BE%D0%BC_%D0%B4%D1%80%D1%83%D0%BA%D1%83_%282020_%D0%B3.%29.jpg)`
+- **Caption/credit:** W — CC BY-SA 4.0 — Wikimedia Commons. [Sumber](https://commons.wikimedia.org/wiki/File:%21%D0%91%D0%B5%D0%BB%D0%B0%D1%80%D1%83%D1%81%D0%BA%D1%96_%D0%B4%D0%BE%D0%BC_%D0%B4%D1%80%D1%83%D0%BA%D1%83_(2020_%D0%B3.).jpg); lisensi [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).
+- **Selection basis:** filename/source metadata identifies `!Беларускі дом друку (2020 г.).jpg` as relevant content media; no pixels were inspected.
+- **Hard boundary:** do not infer or describe unseen visual details, project ownership, location, people, brands, condition, performance, or outcome.
+- **Substitution rule:** do not replace this image. If unavailable or provenance is incomplete, insert `[NEEDS IMAGE REVIEW: EXT-001]` and continue drafting the prose.
+<!-- END MANAGED IMAGE PLAN -->
+
 ## Evidence packet
 
 Use the original source links below. Do not cite this outline or `GLOBAL_RESEARCH.md`.
