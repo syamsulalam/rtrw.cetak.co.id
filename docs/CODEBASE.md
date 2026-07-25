@@ -38,3 +38,12 @@ This document provides a comprehensive overview of the current codebase structur
 - **`DataKeluargaComponent.tsx`**: Powerful unified "Data Kependudukan" master registry. Employs a dual-tab switcher: Tab 1 (Daftar Seluruh Warga) provides a multi-critera population directory with full name/NIK filtering and instant click-to-preview KTP modal overlays; Tab 2 (Silsilah Keluarga KK) organizes citizens into collapsible accordion household units with custom role labels, family removal controls, and spouse/child registration linkages.
 - **`RuangPengurusComponent.tsx`**: Administrative control station for multi-tier RT/RW dewan officers, featuring interactive SVG coordinates blanket projections with adjustable radius, citizen approval waiting lists, drag-and-drop CSV/Excel bulk imports, dynamic sample CSV template generator, and automated KK linking family address synchronizations.
 - **`CariPengurusComponent.tsx`**: Portal search tool for citizens to find their local RT/RW officers' telephone numbers or email hotlines, view secretariat locations, submit relocations/koreksi block numbers, or explore the geosektoral/geospasial maps showing travel-time estimations and interactive housing block pins.
+
+<!-- BEGIN MANAGED LOCAL ARTICLE HANDOFF MAP -->
+## Repository-local article writing handoff
+
+- `ARTICLE_CATALOG.md` appoints historical CMS publication dates for 96 planned articles.
+- `artikel/` contains 96 constrained Markdown writing packets; these are outlines, not published pages.
+- `ARTICLE-GUIDE.md` and the managed block in `AGENTS.md` instruct one-file-at-a-time expansion.
+- The eventual public route contract is `/artikel/[slug].html`; no HTML, sitemap, deployment, or D1 publication state is changed by this handoff.
+<!-- END MANAGED LOCAL ARTICLE HANDOFF MAP -->

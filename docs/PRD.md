@@ -39,3 +39,10 @@ SILAS (Sistem Informasi Layanan Surat Pengantar) - A digital platform to streaml
 - [x] Implemented
 - [/] Partially Implemented
 - [ ] Not Yet Implemented
+
+<!-- BEGIN MANAGED LOCAL ARTICLE HANDOFF PROGRESS -->
+### Repository-local article writing handoff
+
+- [x] **Writing packets prepared**: 96 catalog articles have unique historical CMS dates, repository-local instructions, and source-constrained `artikel/*.md` outlines.
+- [ ] **Article publication**: finished prose, HTML hydration, sitemap insertion, deployment, and GSC submission remain separate future work.
+<!-- END MANAGED LOCAL ARTICLE HANDOFF PROGRESS -->
